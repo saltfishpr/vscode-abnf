@@ -1,5 +1,4 @@
-import { Node } from 'web-tree-sitter';
-import { Tree } from 'web-tree-sitter';
+import { Node, Tree } from 'web-tree-sitter';
 
 export interface ParsedDocument {
   uri: string;
@@ -9,12 +8,6 @@ export interface ParsedDocument {
 }
 
 export interface RuleDefinition {
-  name: string;
-  node: Node;
-  uri: string;
-}
-
-export interface RuleReference {
   name: string;
   node: Node;
   uri: string;

@@ -1,23 +1,17 @@
-import { Language, Node, Parser, Tree } from 'web-tree-sitter';
+// import { Parser } from 'web-tree-sitter/debug';
+import { Parser } from 'web-tree-sitter';
+import { Language, Node, Tree } from 'web-tree-sitter';
 import * as vscode from 'vscode';
-import { RuleDefinition } from './types';
-
-export interface ParsedDocument {
-  uri: string;
-  tree: Tree;
-  definitions: RuleDefinition[];
-  references: Map<string, Node[]>;
-}
+import { ParsedDocument, RuleDefinition } from './types';
 
 export class ABNFParser {
   private parser: Parser | null = null;
   private readonly documents = new Map<string, ParsedDocument>();
 
-  async init(): Promise<void> {
+  async init(wasmPath: string): Promise<void> {
     await Parser.init();
     this.parser = new Parser();
 
-    const wasmPath = require.resolve('tree-sitter-abnf');
     const language = await Language.load(wasmPath);
     this.parser.setLanguage(language);
   }
@@ -36,83 +30,87 @@ export class ABNFParser {
     const definitions: RuleDefinition[] = [];
     const references = new Map<string, Node[]>();
 
-    this.collectDefinitionsAndReferences(tree.rootNode, uri, definitions, references);
+    const rootNode = tree.rootNode;
 
-    const parsed: ParsedDocument = { uri, tree, definitions, references };
-    this.documents.set(uri, parsed);
-    return parsed;
+    // Collect rule definitions and references
+    this.collectDefinitionsAndReferences(rootNode, uri, definitions, references);
+
+    const parsedDoc: ParsedDocument = {
+      uri,
+      tree,
+      definitions,
+      references,
+    };
+
+    this.documents.set(uri, parsedDoc);
+    return parsedDoc;
   }
 
-  getDocument(uri: string): ParsedDocument | null {
-    return this.documents.get(uri) || null;
-  }
-
-  findDefinition(
-    document: vscode.TextDocument,
-    position: vscode.Position,
-  ): vscode.Location | undefined {
-    const parsed = this.getDocument(document.uri.toString());
-    if (!parsed) {
-      return undefined;
-    }
-
-    const targetNode = this.getTargetNode(parsed.tree, document, position);
-    if (!targetNode) {
-      return undefined;
-    }
-
-    const name = targetNode.text.toLowerCase();
-    const def = parsed.definitions.find((d) => d.name === name);
-    if (def) {
-      return this.nodeToLocation(def.node, def.uri);
-    }
-
-    return undefined;
-  }
-
-  findReferences(document: vscode.TextDocument, position: vscode.Position): vscode.Location[] {
-    const parsed = this.getDocument(document.uri.toString());
-    if (!parsed) {
-      return [];
-    }
-
-    const targetNode = this.getTargetNode(parsed.tree, document, position);
-    if (!targetNode) {
-      return [];
-    }
-
-    const name = targetNode.text.toLowerCase();
-    const results: vscode.Location[] = [];
-
-    const def = parsed.definitions.find((d) => d.name === name);
-    if (def) {
-      results.push(this.nodeToLocation(def.node, def.uri)!);
-    }
-
-    const refNodes = parsed.references.get(name);
-    if (refNodes) {
-      for (const refNode of refNodes) {
-        results.push(this.nodeToLocation(refNode, parsed.uri)!);
+  /**
+   * Traverse the syntax tree to collect rule definitions and references.
+   */
+  private collectDefinitionsAndReferences(
+    node: Node,
+    uri: string,
+    definitions: RuleDefinition[],
+    references: Map<string, Node[]>,
+  ): void {
+    if (node.type === 'rule') {
+      // A rule node has children: rulename, defined_as, elements, c_nl
+      for (const child of node.children) {
+        if (child.type === 'rulename') {
+          const ruleName = child.text;
+          definitions.push({ name: ruleName, node: child, uri });
+        }
       }
     }
 
-    return results;
-  }
-
-  getDocumentSymbols(document: vscode.TextDocument): vscode.DocumentSymbol[] {
-    const parsed = this.getDocument(document.uri.toString());
-    if (!parsed) {
-      return [];
+    // Check if current node is a rulename reference (not a definition)
+    // A rulename is a reference if its parent is not a 'rule' node
+    if (node.type === 'rulename' || node.type === 'core_rulename') {
+      const parent = node.parent;
+      // Only collect as reference if parent is not 'rule' (which would make it a definition)
+      if (parent && parent.type !== 'rule') {
+        const ruleName = node.text;
+        if (!references.has(ruleName)) {
+          references.set(ruleName, []);
+        }
+        references.get(ruleName)!.push(node);
+      }
     }
 
-    return parsed.definitions.map((def) => {
-      const { startPosition, endPosition } = def.node;
-      const range = new vscode.Range(
-        new vscode.Position(startPosition.row, startPosition.column),
-        new vscode.Position(endPosition.row, endPosition.column),
-      );
-      return new vscode.DocumentSymbol(def.node.text, '', vscode.SymbolKind.Function, range, range);
-    });
+    // Recursively process all children
+    for (const child of node.children) {
+      this.collectDefinitionsAndReferences(child, uri, definitions, references);
+    }
+  }
+
+  getDocument(uri: string): ParsedDocument | undefined {
+    return this.documents.get(uri);
+  }
+
+  getTargetNode(tree: Tree, offset: number): Node | null {
+    const node = tree.rootNode.descendantForIndex(offset);
+    if (!node) {
+      return null;
+    }
+
+    if (node.type === 'rulename' || node.type === 'core_rulename') {
+      return node;
+    }
+    if (node.parent && (node.parent.type === 'rulename' || node.parent.type === 'core_rulename')) {
+      return node.parent;
+    }
+    return null;
+  }
+
+  getNodeLocation(uri: string, node: Node): vscode.Location | undefined {
+    const { startPosition, endPosition } = node;
+    const range = new vscode.Range(
+      new vscode.Position(startPosition.row, startPosition.column),
+      new vscode.Position(endPosition.row, endPosition.column),
+    );
+    return new vscode.Location(vscode.Uri.parse(uri), range);
   }
 
   invalidateDocument(uri: string): void {
@@ -129,64 +127,5 @@ export class ABNFParser {
     }
     this.documents.clear();
     this.parser?.delete();
-  }
-
-  private collectDefinitionsAndReferences(
-    node: Node,
-    uri: string,
-    definitions: RuleDefinition[],
-    references: Map<string, Node[]>,
-  ): void {
-    if (node.type === 'rule') {
-      const rulenameNode = node.childForFieldName('rulename');
-      if (rulenameNode) {
-        const name = rulenameNode.text.toLowerCase();
-        definitions.push({ name, node: rulenameNode, uri });
-      }
-    }
-
-    if (node.type === 'rulename' || node.type === 'core_rulename') {
-      const parent = node.parent;
-      if (parent && parent.type === 'element') {
-        const name = node.text.toLowerCase();
-        if (!references.has(name)) {
-          references.set(name, []);
-        }
-        references.get(name)!.push(node);
-      }
-    }
-
-    for (const child of node.children) {
-      this.collectDefinitionsAndReferences(child, uri, definitions, references);
-    }
-  }
-
-  private getTargetNode(
-    tree: Tree,
-    document: vscode.TextDocument,
-    position: vscode.Position,
-  ): Node | null {
-    const offset = document.offsetAt(position);
-    const node = tree.rootNode.descendantForIndex(offset);
-    if (!node) {
-      return null;
-    }
-
-    if (node.type === 'rulename' || node.type === 'core_rulename') {
-      return node;
-    }
-    if (node.parent && (node.parent.type === 'rulename' || node.parent.type === 'core_rulename')) {
-      return node.parent;
-    }
-    return null;
-  }
-
-  private nodeToLocation(node: Node, uri: string): vscode.Location | undefined {
-    const { startPosition, endPosition } = node;
-    const range = new vscode.Range(
-      new vscode.Position(startPosition.row, startPosition.column),
-      new vscode.Position(endPosition.row, endPosition.column),
-    );
-    return new vscode.Location(vscode.Uri.parse(uri), range);
   }
 }

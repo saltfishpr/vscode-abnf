@@ -5,7 +5,8 @@ import { registerDocumentListeners, registerProviders } from './providers';
 const parser = new ABNFParser();
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-  await parser.init();
+  const wasmPath = vscode.Uri.joinPath(context.extensionUri, 'tree-sitter-abnf.wasm').fsPath;
+  await parser.init(wasmPath);
 
   vscode.workspace.textDocuments.forEach((doc) => {
     if (doc.languageId === 'abnf') {

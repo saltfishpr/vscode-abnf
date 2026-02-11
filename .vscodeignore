@@ -4,10 +4,10 @@ src/
 *.map
 
 # Dependencies
-node_modules/
-.pnpm-store/
+node_modules/**
+!node_modules/web-tree-sitter/**
 
-# Build files that are included via package.json
+# Build files
 .vscode/
 .vscode-test/
 

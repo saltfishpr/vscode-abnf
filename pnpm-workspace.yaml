@@ -1,0 +1,6 @@
+ignoredBuiltDependencies:
+  - tree-sitter
+  - tree-sitter-abnf
+
+onlyBuiltDependencies:
+  - tree-sitter-cli

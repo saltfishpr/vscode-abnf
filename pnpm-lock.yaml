@@ -8,12 +8,6 @@ importers:
 
   .:
     dependencies:
-      tree-sitter:
-        specifier: ^0.25.0
-        version: 0.25.0
-      tree-sitter-abnf:
-        specifier: github:saltfishpr/tree-sitter-abnf
-        version: https://codeload.github.com/saltfishpr/tree-sitter-abnf/tar.gz/1f65f361860a9e0078e1d8c3bafb2035c39490ff(tree-sitter@0.25.0)
       web-tree-sitter:
         specifier: ^0.26.5
         version: 0.26.5
@@ -24,6 +18,12 @@ importers:
       '@types/vscode':
         specifier: ^1.109.0
         version: 1.109.0
+      tree-sitter-abnf:
+        specifier: git+https://github.com/saltfishpr/tree-sitter-abnf.git
+        version: https://codeload.github.com/saltfishpr/tree-sitter-abnf/tar.gz/1f65f361860a9e0078e1d8c3bafb2035c39490ff(tree-sitter@0.25.0)
+      tree-sitter-cli:
+        specifier: ^0.26.5
+        version: 0.26.5
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -70,6 +70,11 @@ packages:
     peerDependenciesMeta:
       tree-sitter:
         optional: true
+
+  tree-sitter-cli@0.26.5:
+    resolution: {integrity: sha512-joGY67M2XUVM+ZEs7vTYmSbiDgxtwbuMf1OdKk8q1Dd6wTlbhgtU/mr3j0krBgQs2Zwom6N7vxZaqoM85b79Mw==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
 
   tree-sitter@0.25.0:
     resolution: {integrity: sha512-PGZZzFW63eElZJDe/b/R/LbsjDDYJa5UEjLZJB59RQsMX+fo0j54fqBPn1MGKav/QNa0JR0zBiVaikYDWCj5KQ==}
@@ -130,10 +135,13 @@ snapshots:
     optionalDependencies:
       tree-sitter: 0.25.0
 
+  tree-sitter-cli@0.26.5: {}
+
   tree-sitter@0.25.0:
     dependencies:
       node-addon-api: 8.5.0
       node-gyp-build: 4.8.4
+    optional: true
 
   typescript@5.9.3: {}
 

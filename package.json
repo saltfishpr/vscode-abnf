@@ -3,6 +3,7 @@
   "displayName": "vscode-abnf",
   "description": "Syntax highlighting, Go to Definition, Find References, Hover, and Auto-completion for ABNF (Augmented Backus-Naur Form) files (RFC 5234 / RFC 7405)",
   "version": "0.0.1",
+  "publisher": "saltfishpr",
   "repository": {
     "type": "git",
     "url": "https://github.com/saltfishpr/vscode-abnf.git"
@@ -40,21 +41,23 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
+    "vscode:prepublish": "pnpm run build",
+    "build": "pnpm run build:wasm && pnpm run compile",
+    "build:wasm": "npx tree-sitter build --wasm node_modules/tree-sitter-abnf",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "package": "npx vsce package --no-dependencies",
-    "publish": "npx vsce publish"
+    "package": "pnpm run build && npx vsce package --no-dependencies",
+    "publish": "pnpm run build && npx vsce publish"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",
     "@types/vscode": "^1.109.0",
+    "tree-sitter-abnf": "git+https://github.com/saltfishpr/tree-sitter-abnf.git",
+    "tree-sitter-cli": "^0.26.5",
     "typescript": "^5.9.3",
     "vscode-languageclient": "^9.0.1"
   },
   "dependencies": {
-    "tree-sitter": "^0.25.0",
-    "tree-sitter-abnf": "github:saltfishpr/tree-sitter-abnf",
     "web-tree-sitter": "^0.26.5"
   }
 }
