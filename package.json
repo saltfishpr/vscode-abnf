@@ -43,7 +43,6 @@
     "vscode:prepublish": "pnpm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
     "package": "npx vsce package --no-dependencies",
     "publish": "npx vsce publish"
   },
