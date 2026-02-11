@@ -14,6 +14,9 @@ importers:
       tree-sitter-abnf:
         specifier: github:saltfishpr/tree-sitter-abnf
         version: https://codeload.github.com/saltfishpr/tree-sitter-abnf/tar.gz/1f65f361860a9e0078e1d8c3bafb2035c39490ff(tree-sitter@0.25.0)
+      web-tree-sitter:
+        specifier: ^0.26.5
+        version: 0.26.5
     devDependencies:
       '@types/node':
         specifier: ^25.2.3
@@ -93,6 +96,9 @@ packages:
   vscode-languageserver-types@3.17.5:
     resolution: {integrity: sha512-Ld1VelNuX9pdF39h2Hgaeb5hEZM2Z3jUrrMgWQAu82jMtZp7p3vJT3BzToKtZI7NgQssZje5o0zryOrhQvzQAg==}
 
+  web-tree-sitter@0.26.5:
+    resolution: {integrity: sha512-u9sl+q21VSKX2T8dhpQw8bMGGqNfwaIyuoYE3kdOQGVDrOqrmcS9GmaQoCS602iaFnuokn3WCHW374c7GAnuaQ==}
+
 snapshots:
 
   '@types/node@25.2.3':
@@ -147,3 +153,5 @@ snapshots:
       vscode-languageserver-types: 3.17.5
 
   vscode-languageserver-types@3.17.5: {}
+
+  web-tree-sitter@0.26.5: {}
