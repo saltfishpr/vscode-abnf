@@ -1,32 +1,180 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "ABNF",
+	"scopeName": "source.abnf",
+	"fileTypes": [
+		"abnf"
+	],
 	"patterns": [
 		{
-			"include": "#keywords"
+			"include": "#comment"
 		},
 		{
-			"include": "#strings"
+			"include": "#rule-definition"
+		},
+		{
+			"include": "#expression"
 		}
 	],
 	"repository": {
-		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.abnf",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
+		"comment": {
+			"name": "comment.line.semicolon.abnf",
+			"match": ";.*$"
 		},
-		"strings": {
-			"name": "string.quoted.double.abnf",
-			"begin": "\"",
-			"end": "\"",
+		"rule-definition": {
+			"match": "^([A-Za-z][A-Za-z0-9\\-]*)\\s*(=\\/?)",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.rule-definition.abnf"
+				},
+				"2": {
+					"name": "keyword.operator.assignment.abnf"
+				}
+			}
+		},
+		"expression": {
 			"patterns": [
 				{
-					"name": "constant.character.escape.abnf",
-					"match": "\\\\."
+					"include": "#comment"
+				},
+				{
+					"include": "#string-case-sensitive"
+				},
+				{
+					"include": "#string-case-insensitive"
+				},
+				{
+					"include": "#string-literal"
+				},
+				{
+					"include": "#numeric-value"
+				},
+				{
+					"include": "#prose-value"
+				},
+				{
+					"include": "#repetition-operator"
+				},
+				{
+					"include": "#alternation-operator"
+				},
+				{
+					"include": "#group"
+				},
+				{
+					"include": "#option"
+				},
+				{
+					"include": "#core-rules"
+				},
+				{
+					"include": "#rule-reference"
 				}
 			]
+		},
+		"string-case-sensitive": {
+			"name": "string.quoted.double.case-sensitive.abnf",
+			"match": "(%s)(\"[^\"]*\")",
+			"captures": {
+				"1": {
+					"name": "keyword.other.case-modifier.abnf"
+				},
+				"2": {
+					"name": "string.quoted.double.abnf"
+				}
+			}
+		},
+		"string-case-insensitive": {
+			"name": "string.quoted.double.case-insensitive.abnf",
+			"match": "(%i)(\"[^\"]*\")",
+			"captures": {
+				"1": {
+					"name": "keyword.other.case-modifier.abnf"
+				},
+				"2": {
+					"name": "string.quoted.double.abnf"
+				}
+			}
+		},
+		"string-literal": {
+			"name": "string.quoted.double.abnf",
+			"match": "\"[^\"]*\""
+		},
+		"numeric-value": {
+			"patterns": [
+				{
+					"name": "constant.numeric.hex.abnf",
+					"match": "%x[0-9A-Fa-f]+([\\.\\-][0-9A-Fa-f]+)*"
+				},
+				{
+					"name": "constant.numeric.decimal.abnf",
+					"match": "%d[0-9]+([\\.\\-][0-9]+)*"
+				},
+				{
+					"name": "constant.numeric.binary.abnf",
+					"match": "%b[01]+([\\.\\-][01]+)*"
+				}
+			]
+		},
+		"prose-value": {
+			"name": "string.other.prose.abnf",
+			"match": "<[^>]*>"
+		},
+		"repetition-operator": {
+			"name": "keyword.operator.quantifier.abnf",
+			"match": "\\d*\\*\\d*|\\d+"
+		},
+		"alternation-operator": {
+			"name": "keyword.operator.alternation.abnf",
+			"match": "/"
+		},
+		"group": {
+			"name": "meta.group.abnf",
+			"begin": "\\(",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.group.begin.abnf"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.group.end.abnf"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#expression"
+				}
+			]
+		},
+		"option": {
+			"name": "meta.option.abnf",
+			"begin": "\\[",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.option.begin.abnf"
+				}
+			},
+			"end": "\\]",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.option.end.abnf"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#expression"
+				}
+			]
+		},
+		"core-rules": {
+			"name": "support.constant.core-rule.abnf",
+			"match": "\\b(ALPHA|BIT|CHAR|CR|CRLF|CTL|DIGIT|DQUOTE|HEXDIG|HTAB|LF|LWSP|OCTET|SP|VCHAR|WSP)\\b"
+		},
+		"rule-reference": {
+			"name": "variable.other.rule-reference.abnf",
+			"match": "\\b[A-Za-z][A-Za-z0-9\\-]*\\b"
 		}
-	},
-	"scopeName": "source.abnf"
+	}
 }

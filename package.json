@@ -1,7 +1,7 @@
 {
   "name": "vscode-abnf",
   "displayName": "vscode-abnf",
-  "description": "ABNF support",
+  "description": "Syntax highlighting, Go to Definition, Find References, Hover, and Auto-completion for ABNF (Augmented Backus-Naur Form) files (RFC 5234 / RFC 7405)",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.109.0"
