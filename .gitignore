@@ -1,3 +1,24 @@
-node_modules
+# Build output
+out/
+
+# Dependencies
+node_modules/
+
+# VS Code
+.vscode/
+.vscode-test/
+
+# Package
 *.vsix
+
+# Environment
 .env
+
+# Debug
+*.log
+
+# OS
+.DS_Store
+
+# pnpm
+.pnpm-store/

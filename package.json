@@ -3,11 +3,15 @@
   "displayName": "vscode-abnf",
   "description": "Syntax highlighting, Go to Definition, Find References, Hover, and Auto-completion for ABNF (Augmented Backus-Naur Form) files (RFC 5234 / RFC 7405)",
   "version": "0.0.1",
+  "main": "./out/extension.js",
   "engines": {
     "vscode": "^1.109.0"
   },
   "categories": [
     "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:abnf"
   ],
   "contributes": {
     "languages": [
@@ -30,5 +34,15 @@
         "path": "./syntaxes/abnf.tmLanguage.json"
       }
     ]
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.3",
+    "@types/vscode": "^1.109.0",
+    "typescript": "^5.9.3",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "dependencies": {
+    "tree-sitter": "^0.25.0",
+    "tree-sitter-abnf": "github:saltfishpr/tree-sitter-abnf"
   }
 }

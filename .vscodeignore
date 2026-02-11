@@ -1,4 +1,25 @@
-.vscode/**
-.vscode-test/**
+# Source files
+src/
+*.ts
+*.map
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build files that are included via package.json
+.vscode/
+.vscode-test/
+
+# Editor
+.git/
 .gitignore
-vsc-extension-quickstart.md
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Misc
+*.vsix
