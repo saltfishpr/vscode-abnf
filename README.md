@@ -55,22 +55,22 @@ None currently. Please report issues via the GitHub issue tracker.
 
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
 # Compile
-pnpm run compile
+npm run compile
 
 # Watch mode
-pnpm run watch
+npm run watch
 
 # Run linting
-pnpm run lint
+npm run lint
 
 # Run tests
-pnpm run test
+npm run test
 
 # Package extension
-pnpm run package
+npm run package
 ```
 
 ## License

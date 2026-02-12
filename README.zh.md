@@ -55,22 +55,22 @@ RFC 5234 核心规则使用特殊样式高亮：
 
 ```bash
 # 安装依赖
-pnpm install
+npm install
 
 # 编译
-pnpm run compile
+npm run compile
 
 # 监听模式
-pnpm run watch
+npm run watch
 
 # 代码检查
-pnpm run lint
+npm run lint
 
 # 运行测试
-pnpm run test
+npm run test
 
 # 打包扩展
-pnpm run package
+npm run package
 ```
 
 ## 许可证
