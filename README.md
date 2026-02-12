@@ -4,6 +4,10 @@
 
 Language support for [ABNF](https://datatracker.ietf.org/doc/html/rfc5234) grammars, compliant with [RFC 5234](https://datatracker.ietf.org/doc/html/rfc5234) and [RFC 7405](https://datatracker.ietf.org/doc/html/rfc7405).
 
+<p align="center">
+  <img src="image.png" alt="ABNF Language Support" />
+</p>
+
 ## Features
 
 - **Syntax Highlighting** — Full support for ABNF syntax including rule definitions, literals, numeric values, and comments
@@ -12,10 +16,6 @@ Language support for [ABNF](https://datatracker.ietf.org/doc/html/rfc5234) gramm
 - **Hover** — Hover over rule names to see their definitions
 - **Auto-completion** — Intelligent rule name completion as you type
 - **Document Symbols** — Outline view for navigating rules in the current file
-
-### Syntax Highlighting
-
-![Syntax Highlighting](https://via.placeholder.com/800x400?text=Syntax+Highlighting+Screenshot)
 
 ## Language Support
 

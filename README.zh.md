@@ -4,6 +4,10 @@
 
 为 [ABNF](https://datatracker.ietf.org/doc/html/rfc5234) 语法提供语言支持，兼容 [RFC 5234](https://datatracker.ietf.org/doc/html/rfc5234) 和 [RFC 7405](https://datatracker.ietf.org/doc/html/rfc7405)。
 
+<p align="center">
+  <img src="image.png" alt="ABNF Language Support" />
+</p>
+
 ## 功能特性
 
 - **语法高亮** — 完整支持 ABNF 语法，包括规则定义、字符串字面量、数值和注释
@@ -12,10 +16,6 @@
 - **悬停提示** — 鼠标悬停在规则名上查看其定义
 - **自动补全** — 智能提示规则名称
 - **文档大纲** — 大纲视图中快速浏览和导航当前文件的规则
-
-### 语法高亮
-
-![语法高亮](https://via.placeholder.com/800x400?text=语法高亮截图)
 
 ## 语言支持
 

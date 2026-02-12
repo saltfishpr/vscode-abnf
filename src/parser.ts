@@ -88,6 +88,15 @@ export class ABNFParser {
     return this.documents.get(uri);
   }
 
+  getOrParseDocument(document: vscode.TextDocument): ParsedDocument | null {
+    const uri = document.uri.toString();
+    let parsed = this.documents.get(uri);
+    if (parsed) {
+      return parsed;
+    }
+    return this.parse(document);
+  }
+
   invalidateDocument(uri: string): void {
     const doc = this.documents.get(uri);
     if (doc) {
