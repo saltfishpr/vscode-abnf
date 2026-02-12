@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
+import { registerDocumentListeners, registerProviders } from './features';
 import { logger } from './logger';
 import { ABNFParser } from './parser';
-import { registerDocumentListeners, registerProviders } from './providers';
 
 const parser = new ABNFParser();
 
