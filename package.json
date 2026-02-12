@@ -15,9 +15,7 @@
   "categories": [
     "Programming Languages"
   ],
-  "activationEvents": [
-    "onLanguage:abnf"
-  ],
+  "activationEvents": [],
   "contributes": {
     "languages": [
       {
