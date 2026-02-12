@@ -9,7 +9,6 @@ export function getNodeAtPosition(rootNode: Node, position: vscode.Position): No
   const col = position.character;
 
   function search(node: Node): Node | null {
-    // Check if position is within this node
     if (
       row < node.startPosition.row ||
       row > node.endPosition.row ||
@@ -19,7 +18,6 @@ export function getNodeAtPosition(rootNode: Node, position: vscode.Position): No
       return null;
     }
 
-    // Search children first (for more specific nodes)
     for (const child of node.children) {
       const result = search(child);
       if (result) {
@@ -27,7 +25,6 @@ export function getNodeAtPosition(rootNode: Node, position: vscode.Position): No
       }
     }
 
-    // Return this node if position is within it
     return node;
   }
 

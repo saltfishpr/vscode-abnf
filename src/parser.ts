@@ -1,7 +1,6 @@
-// import { Parser } from 'web-tree-sitter/debug';
-import { Parser } from 'web-tree-sitter';
-import { Language, Node, Tree } from 'web-tree-sitter';
 import * as vscode from 'vscode';
+import { Language, Node, Parser, Tree } from 'web-tree-sitter';
+import { logger } from './logger';
 import { ParsedDocument, RuleDefinition } from './types';
 
 export class ABNFParser {
@@ -9,30 +8,35 @@ export class ABNFParser {
   private readonly documents = new Map<string, ParsedDocument>();
 
   async init(wasmPath: string): Promise<void> {
+    logger.debug('Loading tree-sitter WASM...');
     await Parser.init();
     this.parser = new Parser();
 
+    logger.debug('Loading ABNF language from WASM...');
     const language = await Language.load(wasmPath);
     this.parser.setLanguage(language);
+    logger.info('ABNF language loaded and parser ready');
   }
 
   parse(document: vscode.TextDocument): ParsedDocument | null {
     if (!this.parser) {
+      logger.warn('Parser not initialized, cannot parse document:', document.uri.toString());
       return null;
     }
+
+    const uri = document.uri.toString();
+    logger.debug(`Parsing document: ${uri}`);
 
     const tree = this.parser.parse(document.getText());
     if (!tree) {
       return null;
     }
 
-    const uri = document.uri.toString();
     const definitions: RuleDefinition[] = [];
     const references = new Map<string, Node[]>();
 
     const rootNode = tree.rootNode;
 
-    // Collect rule definitions and references
     this.collectDefinitionsAndReferences(rootNode, uri, definitions, references);
 
     const parsedDoc: ParsedDocument = {
@@ -56,7 +60,6 @@ export class ABNFParser {
     references: Map<string, Node[]>,
   ): void {
     if (node.type === 'rule') {
-      // A rule node has children: rulename, defined_as, elements, c_nl
       for (const child of node.children) {
         if (child.type === 'rulename') {
           const ruleName = child.text;
@@ -65,11 +68,8 @@ export class ABNFParser {
       }
     }
 
-    // Check if current node is a rulename reference (not a definition)
-    // A rulename is a reference if its parent is not a 'rule' node
     if (node.type === 'rulename' || node.type === 'core_rulename') {
       const parent = node.parent;
-      // Only collect as reference if parent is not 'rule' (which would make it a definition)
       if (parent && parent.type !== 'rule') {
         const ruleName = node.text;
         if (!references.has(ruleName)) {
@@ -79,7 +79,6 @@ export class ABNFParser {
       }
     }
 
-    // Recursively process all children
     for (const child of node.children) {
       this.collectDefinitionsAndReferences(child, uri, definitions, references);
     }
@@ -116,16 +115,20 @@ export class ABNFParser {
   invalidateDocument(uri: string): void {
     const doc = this.documents.get(uri);
     if (doc) {
+      logger.debug(`Invalidating document: ${uri}`);
       doc.tree.delete();
       this.documents.delete(uri);
     }
   }
 
   dispose(): void {
+    const count = this.documents.size;
+    logger.debug(`Disposing parser (${count} documents in cache)`);
     for (const doc of this.documents.values()) {
       doc.tree.delete();
     }
     this.documents.clear();
     this.parser?.delete();
+    logger.info('Parser disposed');
   }
 }
