@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { ABNFParser } from '../parser';
+import { getNodeAtPosition, toLocation } from './utils';
 
 export function registerReferenceProvider(parser: ABNFParser): vscode.Disposable {
   return vscode.languages.registerReferenceProvider('abnf', {
@@ -9,7 +10,7 @@ export function registerReferenceProvider(parser: ABNFParser): vscode.Disposable
         return [];
       }
 
-      const targetNode = parser.getTargetNode(parsed.tree, document.offsetAt(position));
+      const targetNode = getNodeAtPosition(parsed.tree.rootNode, document.offsetAt(position));
       if (!targetNode) {
         return [];
       }
@@ -17,13 +18,13 @@ export function registerReferenceProvider(parser: ABNFParser): vscode.Disposable
       const results: vscode.Location[] = [];
       const def = parsed.definitions.find((d) => d.name === targetNode.text);
       if (def) {
-        results.push(parser.getNodeLocation(def.uri, def.node)!);
+        results.push(toLocation(def.uri, def.node)!);
       }
 
       const refNodes = parsed.references.get(targetNode.text);
       if (refNodes) {
         for (const refNode of refNodes) {
-          results.push(parser.getNodeLocation(parsed.uri, refNode)!);
+          results.push(toLocation(parsed.uri, refNode)!);
         }
       }
 

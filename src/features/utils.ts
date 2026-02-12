@@ -4,37 +4,25 @@ import { Node } from 'web-tree-sitter';
 /**
  * Get the syntax tree node at a given position.
  */
-export function getNodeAtPosition(rootNode: Node, position: vscode.Position): Node | null {
-  const row = position.line;
-  const col = position.character;
-
-  function search(node: Node): Node | null {
-    if (
-      row < node.startPosition.row ||
-      row > node.endPosition.row ||
-      (row === node.startPosition.row && col < node.startPosition.column) ||
-      (row === node.endPosition.row && col > node.endPosition.column)
-    ) {
-      return null;
-    }
-
-    for (const child of node.children) {
-      const result = search(child);
-      if (result) {
-        return result;
-      }
-    }
-
-    return node;
+export function getNodeAtPosition(rootNode: Node, offset: number): Node | null {
+  const node = rootNode.descendantForIndex(offset);
+  if (!node) {
+    return null;
   }
 
-  return search(rootNode);
+  if (node.type === 'rulename' || node.type === 'core_rulename') {
+    return node;
+  }
+  if (node.parent && (node.parent.type === 'rulename' || node.parent.type === 'core_rulename')) {
+    return node.parent;
+  }
+  return null;
 }
 
 /**
  * Convert a tree-sitter node to a VS Code location.
  */
-export function toLocation(node: Node, uri: string): vscode.Location {
+export function toLocation(uri: string, node: Node): vscode.Location {
   return new vscode.Location(vscode.Uri.parse(uri), toRange(node));
 }
 

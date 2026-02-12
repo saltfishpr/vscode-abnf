@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Language, Node, Parser, Tree } from 'web-tree-sitter';
+import { Language, Node, Parser } from 'web-tree-sitter';
 import { logger } from './logger';
 import { ParsedDocument, RuleDefinition } from './types';
 
@@ -86,30 +86,6 @@ export class ABNFParser {
 
   getDocument(uri: string): ParsedDocument | undefined {
     return this.documents.get(uri);
-  }
-
-  getTargetNode(tree: Tree, offset: number): Node | null {
-    const node = tree.rootNode.descendantForIndex(offset);
-    if (!node) {
-      return null;
-    }
-
-    if (node.type === 'rulename' || node.type === 'core_rulename') {
-      return node;
-    }
-    if (node.parent && (node.parent.type === 'rulename' || node.parent.type === 'core_rulename')) {
-      return node.parent;
-    }
-    return null;
-  }
-
-  getNodeLocation(uri: string, node: Node): vscode.Location | undefined {
-    const { startPosition, endPosition } = node;
-    const range = new vscode.Range(
-      new vscode.Position(startPosition.row, startPosition.column),
-      new vscode.Position(endPosition.row, endPosition.column),
-    );
-    return new vscode.Location(vscode.Uri.parse(uri), range);
   }
 
   invalidateDocument(uri: string): void {
