@@ -16,6 +16,7 @@ export function getNodeAtPosition(rootNode: Node, offset: number): Node | null {
   if (node.parent && (node.parent.type === 'rulename' || node.parent.type === 'core_rulename')) {
     return node.parent;
   }
+
   return null;
 }
 
